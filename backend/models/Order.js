@@ -1,33 +1,37 @@
 import mongoose from "mongoose";
 
-const OrderSchema = new mongoose.Schema(
+const orderSchema = new mongoose.Schema(
   {
-    restaurante: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Restaurant",
-      required: true,
+    restaurante: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: "Restaurant", 
+      required: true 
     },
     itens: [
       {
-        nome: String,
-        preco: Number,
-        quantidade: Number,
-      },
+        produto: { 
+          type: mongoose.Schema.Types.ObjectId, 
+          ref: "Product", 
+          required: true 
+        },
+        quantidade: { 
+          type: Number, 
+          required: true,
+          min: 1 
+        }
+      }
     ],
-    total: Number,
-    cliente: {
-      nome: String,
-      telefone: String,
-      endereco: String,
+    total: { 
+      type: Number, 
+      required: true 
     },
     status: {
       type: String,
-      enum: ["pendente", "preparando", "enviado", "entregue"],
-      default: "pendente",
-    },
+      enum: ["pendente", "em preparo", "entregue"],
+      default: "pendente"
+    }
   },
   { timestamps: true }
 );
 
-const Order = mongoose.model("Order", OrderSchema);
-export default Order;
+export default mongoose.model("Order", orderSchema);
