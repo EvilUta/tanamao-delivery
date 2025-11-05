@@ -9,7 +9,7 @@ import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js"; // 👈 nova rota adicionada
 
 // Carrega variáveis do config.env
-dotenv.config({ path: "./backend/config.env" });
+dotenv.config();
 
 const app = express();
 
