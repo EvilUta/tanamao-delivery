@@ -8,7 +8,8 @@ import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js"; // 👈 nova rota adicionada
 
-dotenv.config();
+// Carrega variáveis do config.env
+dotenv.config({ path: "./backend/config.env" });
 
 const app = express();
 
@@ -21,16 +22,14 @@ const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
 mongoose
-  .connect(MONGO_URI, {
-    serverSelectionTimeoutMS: 8000,
-  })
+  .connect(MONGO_URI, { serverSelectionTimeoutMS: 8000 })
   .then(() => console.log("✅ MongoDB conectado com sucesso"))
   .catch((err) => console.error("❌ Erro ao conectar MongoDB:", err.message));
 
 // Rotas da API
 app.use("/api/auth", authRoutes);
 app.use("/api/produtos", productRoutes);
-app.use("/api/pedidos", orderRoutes); // 👈 aqui você adiciona a nova rota
+app.use("/api/pedidos", orderRoutes);
 
 // Rota base
 app.get("/", (req, res) => {
