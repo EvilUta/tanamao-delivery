@@ -1,5 +1,6 @@
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
+import { handleError } from "../utils/errorHandler.js";
 
 // Criar novo pedido
 export const createOrder = async (req, res) => {
@@ -7,17 +8,14 @@ export const createOrder = async (req, res) => {
     const restaurante = req.userId;
     const { itens } = req.body;
 
-    if (!itens || itens.length === 0) {
-      return res.status(400).json({ msg: "O pedido precisa conter ao menos 1 item." });
-    }
+    if (!itens || itens.length === 0)
+      return handleError(res, 400, "O pedido precisa conter ao menos 1 item.");
 
-    // Calcular total automaticamente
     let total = 0;
     for (const item of itens) {
       const produto = await Product.findById(item.produto);
-      if (!produto) {
-        return res.status(404).json({ msg: "Produto não encontrado: " + item.produto });
-      }
+      if (!produto)
+        return handleError(res, 404, `Produto não encontrado: ${item.produto}`);
       total += (produto.preco || 0) * (item.quantidade || 0);
     }
 
@@ -27,9 +25,13 @@ export const createOrder = async (req, res) => {
       total,
     });
 
-    res.status(201).json(novoPedido);
+    res.status(201).json({
+      sucesso: true,
+      msg: "Pedido criado com sucesso.",
+      pedido: novoPedido,
+    });
   } catch (err) {
-    res.status(500).json({ erro: err.message });
+    return handleError(res, 500, "Erro ao criar pedido.");
   }
 };
 
@@ -40,9 +42,9 @@ export const getOrders = async (req, res) => {
       .populate("itens.produto", "nome preco imagem")
       .sort({ createdAt: -1 });
 
-    res.json(pedidos);
+    res.json({ sucesso: true, pedidos });
   } catch (err) {
-    res.status(500).json({ erro: err.message });
+    return handleError(res, 500, "Erro ao listar pedidos.");
   }
 };
 
@@ -53,9 +55,8 @@ export const updateStatus = async (req, res) => {
     const { status } = req.body;
 
     const permitido = ["pendente", "em preparo", "entregue"];
-    if (!permitido.includes(status)) {
-      return res.status(400).json({ msg: "Status inválido." });
-    }
+    if (!permitido.includes(status))
+      return handleError(res, 400, "Status inválido.");
 
     const pedido = await Order.findOneAndUpdate(
       { _id: id, restaurante: req.userId },
@@ -63,10 +64,15 @@ export const updateStatus = async (req, res) => {
       { new: true }
     );
 
-    if (!pedido) return res.status(404).json({ msg: "Pedido não encontrado." });
-    res.json(pedido);
+    if (!pedido) return handleError(res, 404, "Pedido não encontrado.");
+
+    res.json({
+      sucesso: true,
+      msg: "Status atualizado com sucesso.",
+      pedido,
+    });
   } catch (err) {
-    res.status(500).json({ erro: err.message });
+    return handleError(res, 500, "Erro ao atualizar status do pedido.");
   }
 };
 
@@ -74,10 +80,18 @@ export const updateStatus = async (req, res) => {
 export const deleteOrder = async (req, res) => {
   try {
     const { id } = req.params;
-    const pedido = await Order.findOneAndDelete({ _id: id, restaurante: req.userId });
-    if (!pedido) return res.status(404).json({ msg: "Pedido não encontrado." });
-    res.json({ msg: "Pedido removido com sucesso." });
+    const pedido = await Order.findOneAndDelete({
+      _id: id,
+      restaurante: req.userId,
+    });
+
+    if (!pedido) return handleError(res, 404, "Pedido não encontrado.");
+
+    res.json({
+      sucesso: true,
+      msg: "Pedido removido com sucesso.",
+    });
   } catch (err) {
-    res.status(500).json({ erro: err.message });
+    return handleError(res, 500, "Erro ao remover pedido.");
   }
 };

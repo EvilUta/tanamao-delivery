@@ -3,15 +3,18 @@ import {
   createProduct,
   getProducts,
   updateProduct,
-  deleteProduct,
+  deleteProduct
 } from "../controllers/productController.js";
-import { authMiddleware } from "../middleware/authMiddleware.js";
+import { verificarToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", authMiddleware, createProduct);
-router.get("/", authMiddleware, getProducts);
-router.put("/:id", authMiddleware, updateProduct);
-router.delete("/:id", authMiddleware, deleteProduct);
+// ✅ Protege todas as rotas de produto
+router.use(verificarToken);
+
+router.post("/", createProduct);
+router.get("/", getProducts);
+router.put("/:id", updateProduct);
+router.delete("/:id", deleteProduct);
 
 export default router;

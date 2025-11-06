@@ -1,53 +1,50 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
 export default function LoginAdmin() {
-  const [form, setForm] = useState({ email: "", senha: "" });
-  const [msg, setMsg] = useState("");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [erro, setErro] = useState("");
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post("/auth/login", form);
+      const res = await api.post("/auth/login", { email, senha });
       localStorage.setItem("token", res.data.token);
-      setMsg("✅ Login realizado com sucesso!");
-      window.location.href = "/dashboard"; // redireciona
+      navigate("/dashboard");
     } catch (err) {
-      setMsg(err.response?.data?.msg || "Erro ao fazer login");
+      setErro("Credenciais inválidas. Tente novamente.");
     }
   };
 
   return (
-    <main className="max-w-md mx-auto p-6 pt-28">
-      <h1 className="text-2xl font-bold mb-4">Login Restaurante</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
+      <h1 className="text-2xl font-bold mb-4">Painel do Restaurante</h1>
+      <form
+        onSubmit={handleLogin}
+        className="flex flex-col gap-3 w-80 bg-white p-6 shadow-md rounded-lg"
+      >
         <input
           type="email"
-          name="email"
           placeholder="E-mail"
-          value={form.email}
-          onChange={handleChange}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="border p-2 rounded"
-          required
         />
         <input
           type="password"
-          name="senha"
           placeholder="Senha"
-          value={form.senha}
-          onChange={handleChange}
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
           className="border p-2 rounded"
-          required
         />
-        <button className="bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
+        <button className="bg-green-600 text-white py-2 rounded">
           Entrar
         </button>
+        {erro && <p className="text-red-500 text-center">{erro}</p>}
       </form>
-      {msg && <p className="mt-4 text-center text-sm">{msg}</p>}
-    </main>
+    </div>
   );
 }

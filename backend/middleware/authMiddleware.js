@@ -1,16 +1,25 @@
 import jwt from "jsonwebtoken";
 
-export const authMiddleware = (req, res, next) => {
+export const verificarToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
-  if (!authHeader) return res.status(401).json({ msg: "Token não fornecido" });
 
-  const token = authHeader.split(" ")[1]; // Pega só o token depois de "Bearer"
+  if (!authHeader) {
+    return res.status(401).json({
+      sucesso: false,
+      mensagem: "Token não fornecido.",
+    });
+  }
+
+  const token = authHeader.split(" ")[1];
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.id; // salva o ID do restaurante logado
+    req.userId = decoded.id;
     next();
   } catch (err) {
-    return res.status(401).json({ msg: "Token inválido ou expirado" });
+    return res.status(401).json({
+      sucesso: false,
+      mensagem: "Token inválido ou expirado.",
+    });
   }
 };

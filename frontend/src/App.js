@@ -5,6 +5,7 @@ import Cardapio from "./pages/Cardapio";
 import Carrinho from "./pages/Carrinho";
 import LoginAdmin from "./pages/LoginAdmin";
 import DashboardAdmin from "./pages/DashboardAdmin";
+import RequireAuth from "./components/RequireAuth"; // 👈 import novo
 
 function App() {
   const [carrinho, setCarrinho] = useState([]);
@@ -23,14 +24,19 @@ function App() {
         />
         {/* Login do restaurante */}
         <Route path="/login-admin" element={<LoginAdmin />} />
-        {/* Dashboard pós-login */}
-        <Route path="/dashboard" element={<DashboardAdmin />} />
+
+        {/* Dashboard protegido */}
+        <Route
+          path="/dashboard"
+          element={
+            <RequireAuth>
+              <DashboardAdmin />
+            </RequireAuth>
+          }
+        />
       </Routes>
     </Router>
   );
 }
 
 export default App;
-
-
-

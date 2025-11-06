@@ -1,11 +1,12 @@
 import Restaurant from "../models/Restaurant.js";
+import { handleError } from "../utils/errorHandler.js";
 
 export const listarRestaurantes = async (req, res) => {
   try {
     const restaurantes = await Restaurant.find();
-    res.json(restaurantes);
+    res.json({ sucesso: true, restaurantes });
   } catch (error) {
-    res.status(500).json({ erro: "Erro ao listar restaurantes." });
+    return handleError(res, 500, "Erro ao listar restaurantes.");
   }
 };
 
@@ -13,9 +14,9 @@ export const obterRestaurante = async (req, res) => {
   try {
     const restaurante = await Restaurant.findById(req.params.id);
     if (!restaurante)
-      return res.status(404).json({ mensagem: "Restaurante não encontrado." });
-    res.json(restaurante);
+      return handleError(res, 404, "Restaurante não encontrado.");
+    res.json({ sucesso: true, restaurante });
   } catch (error) {
-    res.status(500).json({ erro: "Erro ao obter restaurante." });
+    return handleError(res, 500, "Erro ao obter restaurante.");
   }
 };

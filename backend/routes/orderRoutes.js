@@ -1,5 +1,5 @@
 import express from "express";
-import { authMiddleware } from "../middleware/authMiddleware.js";
+import { verificarToken } from "../middleware/authMiddleware.js";
 import {
   createOrder,
   getOrders,
@@ -9,9 +9,9 @@ import {
 
 const router = express.Router();
 
-router.post("/", authMiddleware, createOrder);
-router.get("/", authMiddleware, getOrders);
-router.put("/:id", authMiddleware, updateStatus);
-router.delete("/:id", authMiddleware, deleteOrder);
+router.post("/", verificarToken, createOrder);
+router.get("/", verificarToken, getOrders);
+router.put("/:id", verificarToken, updateStatus);
+router.delete("/:id", verificarToken, deleteOrder);
 
 export default router;

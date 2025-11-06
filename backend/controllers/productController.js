@@ -1,76 +1,90 @@
 import mongoose from "mongoose";
 import Product from "../models/Product.js";
 import Restaurant from "../models/Restaurant.js";
+import { handleError } from "../utils/errorHandler.js";
 
-// Criar produto
 export const createProduct = async (req, res) => {
   try {
     const restauranteId = req.userId;
+    const { nome, descricao, preco, imagem } = req.body;
 
-    // 🔎 Verifica se o ID é válido e se o restaurante existe
-    if (!mongoose.Types.ObjectId.isValid(restauranteId)) {
-      return res.status(400).json({ msg: "ID de restaurante inválido" });
-    }
+    if (!nome || !preco)
+      return handleError(res, 400, "Nome e preço são obrigatórios.");
+
+    if (!mongoose.Types.ObjectId.isValid(restauranteId))
+      return handleError(res, 400, "ID de restaurante inválido.");
 
     const restaurante = await Restaurant.findById(restauranteId);
-    if (!restaurante) {
-      return res.status(404).json({ msg: "Restaurante não encontrado" });
-    }
-
-    const { nome, descricao, preco, imagem } = req.body;
+    if (!restaurante)
+      return handleError(res, 404, "Restaurante não encontrado.");
 
     const novoProduto = await Product.create({
       nome,
       descricao,
       preco,
       imagem,
-      restaurante: restaurante._id, // vincula o produto ao restaurante
+      restaurante: restaurante._id,
     });
 
-    res.status(201).json(novoProduto);
+    res.status(201).json({
+      sucesso: true,
+      msg: "Produto criado com sucesso.",
+      produto: novoProduto,
+    });
   } catch (err) {
-    res.status(500).json({ erro: err.message });
+    return handleError(res, 500, "Erro ao criar produto.");
   }
 };
 
-// Listar produtos do restaurante logado
 export const getProducts = async (req, res) => {
   try {
     const produtos = await Product.find({ restaurante: req.userId });
-    res.json(produtos);
+    res.json({ sucesso: true, produtos });
   } catch (err) {
-    res.status(500).json({ erro: err.message });
+    return handleError(res, 500, "Erro ao listar produtos.");
   }
 };
 
-// Atualizar produto
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const atual = await Product.findOneAndUpdate(
+
+    const atualizado = await Product.findOneAndUpdate(
       { _id: id, restaurante: req.userId },
       req.body,
       { new: true }
     );
-    if (!atual) return res.status(404).json({ msg: "Produto não encontrado" });
-    res.json(atual);
+
+    if (!atualizado)
+      return handleError(res, 404, "Produto não encontrado.");
+
+    res.json({
+      sucesso: true,
+      msg: "Produto atualizado com sucesso.",
+      produto: atualizado,
+    });
   } catch (err) {
-    res.status(500).json({ erro: err.message });
+    return handleError(res, 500, "Erro ao atualizar produto.");
   }
 };
 
-// Deletar produto
 export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
+
     const deletado = await Product.findOneAndDelete({
       _id: id,
       restaurante: req.userId,
     });
+
     if (!deletado)
-      return res.status(404).json({ msg: "Produto não encontrado" });
-    res.json({ msg: "Produto removido com sucesso" });
+      return handleError(res, 404, "Produto não encontrado.");
+
+    res.json({
+      sucesso: true,
+      msg: "Produto removido com sucesso.",
+    });
   } catch (err) {
-    res.status(500).json({ erro: err.message });
+    return handleError(res, 500, "Erro ao remover produto.");
   }
 };
