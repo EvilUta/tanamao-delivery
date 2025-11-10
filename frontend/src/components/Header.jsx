@@ -7,46 +7,36 @@ export default function Header({ carrinho }) {
 
   return (
     <header className="sticky top-0 z-20 bg-white border-b border-gray-200">
-      <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-2">
+      <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
         {/* Logo e textos */}
-        <div className="flex items-center gap-3 select-none">
-          <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center shadow-sm">
-            {/* Ícone "chave inglesa" branco */}
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M3 21l6-6" />
-              <path d="M15.5 7.5a3.5 3.5 0 1 0-5 5L19 21l2-2L15.5 7.5z" />
-            </svg>
-          </div>
-          <div>
-            <h1 className="text-[15px] font-semibold text-gray-800">
-              Sistema Delivery
+        <div className="flex items-center gap-4 select-none cursor-pointer" onClick={() => navigate("/")}>
+          {/* Logo */}
+          <img
+            src="/imagens/logo.png"
+            alt="TáNaMão Delivery"
+            className="w-12 h-12 sm:w-14 sm:h-14 object-contain drop-shadow-sm"
+          />
+          {/* Textos */}
+          <div className="flex flex-col leading-tight">
+            <h1 className="text-[17px] sm:text-[18px] font-bold text-gray-800 tracking-tight">
+              TáNaMão Delivery
             </h1>
-            <p className="text-[12px] text-gray-500">Peça já seu lanche!</p>
+            <p className="text-[13px] text-gray-500">Peça já seu lanche!</p>
           </div>
         </div>
 
         {/* Botão do carrinho */}
         <button
           onClick={() => navigate("/carrinho")}
-          className="relative border border-gray-200 hover:bg-gray-50 rounded-md p-2 transition-colors"
+          className="relative border border-gray-200 hover:bg-gray-50 rounded-lg p-2.5 transition-all flex items-center justify-center"
           aria-label="Abrir carrinho"
         >
-          {/* Ícone de carrinho */}
           <svg
-            width="18"
-            height="18"
+            width="20"
+            height="20"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#11182799"
+            stroke="#111827CC"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -58,7 +48,7 @@ export default function Header({ carrinho }) {
 
           {/* Badge vermelho */}
           {count > 0 && (
-            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] leading-none font-semibold rounded-full w-5 h-5 flex items-center justify-center">
+            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] leading-none font-semibold rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
               {count > 99 ? "99+" : count}
             </span>
           )}
